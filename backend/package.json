@@ -1,0 +1,20 @@
+{
+  "name": "ccc_guilhermereginato_parkwash",
+  "version": "1.0.0",
+  "description": "**ParkWash** — Aplicativo para reserva de vagas de estacionamento e agendamento de lavagens privadas.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Guilherme196928/CCC_GuilhermeReginato_ParkWash.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Guilherme196928/CCC_GuilhermeReginato_ParkWash/issues"
+  },
+  "homepage": "https://github.com/Guilherme196928/CCC_GuilhermeReginato_ParkWash#readme"
+}

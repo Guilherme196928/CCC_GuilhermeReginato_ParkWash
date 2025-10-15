@@ -23,3 +23,5 @@ export const createUser = async (req, res) => {
     res.status(500).json({ error: "Erro ao criar usuário" });
   }
 };
+
+//corrigido

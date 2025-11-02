@@ -1,10 +1,13 @@
-import express from "express";
-import { registerUser } from "../controllers/usersController.js";
-
+const express = require("express");
 const router = express.Router();
 
-// Rota de cadastro de usuário
+const {
+  registerUser,
+  loginUser,
+} = require("../controllers/usersController");
+
 router.post("/register", registerUser);
 
-// Exporta as rotas
-export default router;
+router.post("/login", loginUser);
+
+module.exports = router;

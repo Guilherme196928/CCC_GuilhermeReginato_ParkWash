@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "**ParkWash** — Aplicativo para reserva de vagas de estacionamento e agendamento de lavagens privadas.",
   "main": "src/server.js",
-  "type": "module",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js"
@@ -20,13 +19,14 @@
   },
   "homepage": "https://github.com/Guilherme196928/CCC_GuilhermeReginato_ParkWash#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
     "pg": "^8.10.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
   }
 }
-

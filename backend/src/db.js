@@ -1,20 +1,23 @@
-import pg from "pg";
-import dotenv from "dotenv";
+const { Pool } = require("pg");
+const dotenv = require("dotenv");
 
 dotenv.config();
 
-const { Pool } = pg;
-
 const pool = new Pool({
-  host: process.env.PGHOST,
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  database: process.env.PGDATABASE,
-  port: process.env.PGPORT,
+  user: process.env.PGUSER || "postgres",
+  host: process.env.PGHOST || "localhost",
+  database: process.env.PGDATABASE || "parkwash",
+  password: process.env.PGPASSWORD || "123456",
+  port: process.env.PGPORT || 5432,
 });
 
-pool.connect()
-  .then(() => console.log("✅ Conectado ao banco PostgreSQL"))
-  .catch(err => console.error("❌ Erro na conexão com o banco:", err));
+pool
+  .connect()
+  .then(() => {
+    console.log("✅ Conectado ao banco PostgreSQL");
+  })
+  .catch((err) => {
+    console.error("❌ Erro ao conectar ao banco:", err.message);
+  });
 
-export default pool;
+module.exports = pool;

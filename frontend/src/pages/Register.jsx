@@ -4,6 +4,7 @@ function Register() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
+  const [senha, setSenha] = useState("");
   const [mensagem, setMensagem] = useState("");
 
   const handleSubmit = async (e) => {
@@ -13,7 +14,7 @@ function Register() {
       const response = await fetch("http://localhost:3001/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome, email, telefone }),
+        body: JSON.stringify({ nome, email, telefone, senha }),
       });
 
       const data = await response.json();
@@ -22,8 +23,9 @@ function Register() {
         setNome("");
         setEmail("");
         setTelefone("");
+        setSenha("");
       } else {
-        setMensagem(`❌ ${data.message}`);
+        setMensagem(`❌ ${data.message || "Erro ao cadastrar usuário."}`);
       }
     } catch (error) {
       setMensagem("❌ Erro ao conectar com o servidor.");
@@ -60,6 +62,14 @@ function Register() {
           value={telefone}
           onChange={(e) => setTelefone(e.target.value)}
           className="border rounded-lg p-2"
+        />
+        <input
+          type="password"
+          placeholder="Senha"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          className="border rounded-lg p-2"
+          required
         />
 
         <button

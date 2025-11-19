@@ -1,22 +1,54 @@
 // backend/src/controllers/lavagensController.js
 const pool = require("../db");
+const { sendEmail } = require("../utils/emailService");
 
 // ==========================================================
-// Criar nova lavagem
+// Criar nova lavagem + enviar e-mail
 // ==========================================================
 const criarLavagem = async (req, res) => {
   const { usuario_id, estacionamento, tipo, preco, data_lavagem, hora } = req.body;
 
   try {
+    // Inserir no banco
     const result = await pool.query(
       `INSERT INTO lavagens (usuario_id, estacionamento, tipo, preco, data_lavagem, hora)
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
       [usuario_id, estacionamento, tipo, preco, data_lavagem, hora]
     );
 
+    const lavagem = result.rows[0];
+
+    // Buscar dados do usuário para enviar o e-mail
+    const userResult = await pool.query(
+      "SELECT nome, email FROM usuarios WHERE id = $1",
+      [usuario_id]
+    );
+
+    if (userResult.rows.length > 0) {
+      const { nome, email } = userResult.rows[0];
+
+      // Enviar e-mail
+      await sendEmail(
+        email,
+        "📌 Lavagem Agendada",
+        `
+          <h2>Olá, ${nome}!</h2>
+          <p>Sua lavagem foi agendada com sucesso.</p>
+
+          <p><b>Tipo:</b> ${tipo}</p>
+          <p><b>Estacionamento:</b> ${estacionamento}</p>
+          <p><b>Preço:</b> R$ ${preco}</p>
+          <p><b>Data:</b> ${data_lavagem}</p>
+          <p><b>Horário:</b> ${hora}</p>
+
+          <p>Obrigado por usar o ParkWash!</p>
+        `
+      );
+    }
+
     res.status(201).json({
-      message: "✅ Lavagem agendada com sucesso!",
-      lavagem: result.rows[0],
+      message: "✅ Lavagem agendada com sucesso! E-mail enviado.",
+      lavagem,
     });
   } catch (error) {
     console.error("Erro ao criar lavagem:", error);

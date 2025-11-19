@@ -57,7 +57,7 @@ function Reserva() {
       >
         <input
           type="text"
-          placeholder="Nome do estacionamento"
+          placeholder="Nome do Carro"
           value={estacionamento}
           onChange={(e) => setEstacionamento(e.target.value)}
           className="border rounded-lg p-2"

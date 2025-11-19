@@ -1,22 +1,54 @@
 // backend/src/controllers/reservasController.js
 const pool = require("../db");
+const { sendEmail } = require("../utils/emailService");
 
 // ==========================================================
-// Criar nova reserva
+// Criar nova reserva + enviar e-mail
 // ==========================================================
 const criarReserva = async (req, res) => {
   const { usuario_id, estacionamento, data_reserva, hora_entrada, hora_saida } = req.body;
 
   try {
+    // Inserir no banco
     const result = await pool.query(
       `INSERT INTO reservas (usuario_id, estacionamento, data_reserva, hora_entrada, hora_saida)
        VALUES ($1, $2, $3, $4, $5) RETURNING *`,
       [usuario_id, estacionamento, data_reserva, hora_entrada, hora_saida]
     );
 
+    const reservaCriada = result.rows[0];
+
+    // Buscar dados do usuário
+    const userResult = await pool.query(
+      "SELECT nome, email FROM usuarios WHERE id = $1",
+      [usuario_id]
+    );
+
+    const usuario = userResult.rows[0];
+
+    // Template do e-mail
+    const emailHtml = `
+      <h2>Olá, ${usuario.nome}!</h2>
+      <p>Sua reserva de vaga foi confirmada.</p>
+
+      <p><b>Estacionamento:</b> ${estacionamento}</p>
+      <p><b>Data:</b> ${data_reserva}</p>
+      <p><b>Entrada:</b> ${hora_entrada}</p>
+      <p><b>Saída:</b> ${hora_saida}</p>
+
+      <p>Obrigado por usar o ParkWash!</p>
+    `;
+
+    // Enviar e-mail
+    await sendEmail(
+      usuario.email,
+      "📌 Reserva de Vaga Confirmada",
+      emailHtml
+    );
+
     res.status(201).json({
-      message: "✅ Reserva criada com sucesso!",
-      reserva: result.rows[0],
+      message: "✅ Reserva criada e e-mail enviado com sucesso!",
+      reserva: reservaCriada,
     });
   } catch (error) {
     console.error("Erro ao criar reserva:", error);
@@ -25,7 +57,7 @@ const criarReserva = async (req, res) => {
 };
 
 // ==========================================================
-// Listar reservas de um usuário
+// Listar reservas
 // ==========================================================
 const listarReservas = async (req, res) => {
   const { usuario_id } = req.params;
@@ -51,7 +83,7 @@ const cancelarReserva = async (req, res) => {
 
   try {
     await pool.query("DELETE FROM reservas WHERE id = $1", [id]);
-    res.json({ message: "🗑️ Reserva cancelada com sucesso!" });
+    res.json({ message: "Reserva cancelada com sucesso!" });
   } catch (error) {
     console.error("Erro ao cancelar reserva:", error);
     res.status(500).json({ message: "Erro ao cancelar reserva." });

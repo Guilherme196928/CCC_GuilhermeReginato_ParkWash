@@ -4,14 +4,19 @@ const router = express.Router();
 const {
   criarLavagem,
   listarLavagens,
-  cancelarLavagem, // ✅ agora está importado
+  listarTodasLavagens,  // <-- adicionar
+  cancelarLavagem,
 } = require("../controllers/lavagensController");
 
 // Criar nova lavagem
 router.post("/", criarLavagem);
 
+// Listar TODAS as lavagens (funcionário)
+router.get("/all", listarTodasLavagens);
+
 // Listar lavagens de um usuário
 router.get("/:usuario_id", listarLavagens);
+
 
 // Cancelar lavagem
 router.delete("/:id", cancelarLavagem);

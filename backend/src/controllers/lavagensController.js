@@ -47,12 +47,12 @@ const criarLavagem = async (req, res) => {
     }
 
     res.status(201).json({
-      message: "✅ Lavagem agendada com sucesso! E-mail enviado.",
+      message: "✅ Lavagem agendada com sucesso!",
       lavagem,
     });
   } catch (error) {
-    console.error("Erro ao criar lavagem:", error);
-    res.status(500).json({ message: "Erro ao agendar lavagem." });
+    console.error("❌ Erro ao criar lavagem:", error);
+    res.status(500).json({ message: "❌ Erro ao agendar lavagem." });
   }
 };
 
@@ -90,4 +90,33 @@ const cancelarLavagem = async (req, res) => {
   }
 };
 
-module.exports = { criarLavagem, listarLavagens, cancelarLavagem };
+// ==========================================================
+// Listar TODAS as lavagens (para o funcionário)
+// ==========================================================
+const listarTodasLavagens = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        l.*, 
+        u.nome AS nome_usuario,
+        u.email AS email_usuario
+      FROM lavagens l
+      LEFT JOIN usuarios u ON l.usuario_id = u.id
+      ORDER BY data_lavagem DESC
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Erro ao listar todas as lavagens:", error);
+    res.status(500).json({ message: "Erro ao listar lavagens." });
+  }
+};
+
+
+module.exports = { 
+  criarLavagem, 
+  listarLavagens, 
+  listarTodasLavagens,   // <-- adicionar aqui
+  cancelarLavagem 
+};
+

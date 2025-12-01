@@ -7,7 +7,8 @@ import Reserva from "./pages/Reserva";
 import Lavagem from "./pages/Lavagem";
 import Historico from "./pages/Historico";
 
-
+// 👉 importar a nova página
+import FuncionarioDashboard from "./pages/FuncionarioDashboard";
 
 function App() {
   return (
@@ -38,12 +39,16 @@ function App() {
             </div>
           }
         />
+
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/reserva" element={<Reserva />} />
         <Route path="/lavagem" element={<Lavagem />} />
         <Route path="/historico" element={<Historico />} />
+
+        {/* 👉 rota do funcionário */}
+        <Route path="/funcionario/dashboard" element={<FuncionarioDashboard />} />
       </Routes>
     </Router>
   );

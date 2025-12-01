@@ -47,12 +47,12 @@ const criarReserva = async (req, res) => {
     );
 
     res.status(201).json({
-      message: "✅ Reserva criada e e-mail enviado com sucesso!",
+      message: "✅ Reserva criada com sucesso!",
       reserva: reservaCriada,
     });
   } catch (error) {
-    console.error("Erro ao criar reserva:", error);
-    res.status(500).json({ message: "Erro ao criar reserva." });
+    console.error("❌ Erro ao criar reserva:", error);
+    res.status(500).json({ message: "❌ Erro ao criar reserva." });
   }
 };
 
@@ -90,4 +90,30 @@ const cancelarReserva = async (req, res) => {
   }
 };
 
-module.exports = { criarReserva, listarReservas, cancelarReserva };
+// ==========================================================
+// Listar TODAS as reservas (Página do Funcionário)
+// ==========================================================
+const listarTodasReservas = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT r.*, u.nome AS nome_usuario, u.email AS email_usuario
+       FROM reservas r
+       JOIN usuarios u ON r.usuario_id = u.id
+       ORDER BY r.data_reserva DESC`
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Erro ao listar todas as reservas:", error);
+    res.status(500).json({ message: "Erro ao listar todas as reservas." });
+  }
+};
+
+
+module.exports = { 
+  criarReserva, 
+  listarReservas, 
+  listarTodasReservas,   
+  cancelarReserva 
+};
+

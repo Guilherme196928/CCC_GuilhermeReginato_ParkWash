@@ -4,11 +4,15 @@ const router = express.Router();
 const {
   criarReserva,
   listarReservas,
-  cancelarReserva, // ✅ adicionado aqui
+  listarTodasReservas,  // ✅ adicionado
+  cancelarReserva,
 } = require("../controllers/reservasController");
 
 // Criar nova reserva
 router.post("/", criarReserva);
+
+// Listar TODAS as reservas (Página do Funcionário)
+router.get("/all", listarTodasReservas);  // ✅ nova rota
 
 // Listar reservas de um usuário
 router.get("/:usuario_id", listarReservas);

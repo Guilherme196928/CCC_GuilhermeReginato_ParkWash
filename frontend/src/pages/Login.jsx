@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ IMPORTAÇÃO CORRIGIDA
+import { useNavigate } from "react-router-dom"; 
 
 function Login() {
-  const navigate = useNavigate(); // ✅ DECLARAÇÃO CORRETA DO HOOK
+  const navigate = useNavigate(); 
 
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -23,7 +23,7 @@ function Login() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         setMensagem("✅ Login realizado com sucesso!");
-        setTimeout(() => navigate("/dashboard"), 1000); // ✅ REDIRECIONAMENTO FUNCIONAL
+        setTimeout(() => navigate("/dashboard"), 1000); 
       } else {
         setMensagem(`❌ ${data.message}`);
       }

@@ -9,12 +9,27 @@ function Reserva() {
   const [horaEntrada, setHoraEntrada] = useState("");
   const [horaSaida, setHoraSaida] = useState("");
   const [mensagem, setMensagem] = useState("");
+  const [preco, setPreco] = useState(0);
 
+  
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) navigate("/login");
     else setUsuario(JSON.parse(userData));
   }, [navigate]);
+
+  
+  useEffect(() => {
+    if (horaEntrada && horaSaida) {
+      const entrada = new Date(`1970-01-01T${horaEntrada}:00`);
+      const saida = new Date(`1970-01-01T${horaSaida}:00`);
+      let diffHoras = (saida - entrada) / 1000 / 60 / 60;
+      if (diffHoras < 0) diffHoras += 24; 
+      setPreco(diffHoras * 5);
+    } else {
+      setPreco(0);
+    }
+  }, [horaEntrada, horaSaida]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,6 +54,7 @@ function Reserva() {
         setData("");
         setHoraEntrada("");
         setHoraSaida("");
+        setPreco(0);
       } else {
         setMensagem(`❌ ${dataRes.message}`);
       }
@@ -84,6 +100,14 @@ function Reserva() {
           className="border rounded-lg p-2"
           required
         />
+
+        {/* Mostrar preço calculado */}
+        {preco > 0 && (
+          <p className="mt-2 font-bold text-blue-700">
+            Preço: R$ {preco.toFixed(2)}
+          </p>
+        )}
+
         <button
           type="submit"
           className="bg-blue-700 text-white py-2 rounded-lg hover:bg-blue-800 transition"

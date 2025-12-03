@@ -8,12 +8,12 @@ function FuncionarioDashboard() {
   useEffect(() => {
     async function fetchData() {
       try {
-        // Reservas
+
         const r1 = await fetch("http://localhost:3001/api/reservas/all");
         const reservasData = await r1.json();
         setReservas(reservasData);
 
-        // Lavagens
+        
         const r2 = await fetch("http://localhost:3001/api/lavagens/all");
         const lavagensData = await r2.json();
         setLavagens(lavagensData);
@@ -34,9 +34,7 @@ function FuncionarioDashboard() {
     <div style={{ padding: 20 }}>
       <h2>Painel do Funcionário</h2>
 
-      {/* ======================================================
-         TABELA DE RESERVAS DE ESTACIONAMENTO
-      ====================================================== */}
+      {}
       <h3>Reservas de Estacionamento</h3>
       {reservas.length === 0 ? (
         <p>Nenhuma reserva encontrada.</p>
@@ -48,7 +46,8 @@ function FuncionarioDashboard() {
               <th>Cliente</th>
               <th>Data</th>
               <th>Horário</th>
-              <th>Estacionamento</th>
+              <th>Veiculo</th>
+              <th>Preco</th>
             </tr>
           </thead>
           <tbody>
@@ -59,6 +58,7 @@ function FuncionarioDashboard() {
                 <td>{new Date(r.data_reserva).toLocaleDateString()}</td>
                 <td>{r.hora_entrada} - {r.hora_saida}</td>
                 <td>{r.estacionamento}</td>
+                <td>{r.preco}</td>
               </tr>
             ))}
           </tbody>
@@ -67,9 +67,7 @@ function FuncionarioDashboard() {
 
       <hr style={{ margin: "40px 0" }} />
 
-      {/* ======================================================
-         TABELA DE LAVAGENS AGENDADAS
-      ====================================================== */}
+      {}
       <h3>Lavagens Agendadas</h3>
       {lavagens.length === 0 ? (
         <p>Nenhuma lavagem encontrada.</p>
@@ -79,11 +77,11 @@ function FuncionarioDashboard() {
             <tr>
               <th>ID</th>
               <th>Cliente</th>
-              <th>Estacionamento</th>
+              <th>Veiculo</th>
               <th>Tipo</th>
-              <th>Preço</th>
               <th>Data</th>
               <th>Horário</th>
+              <th>Preço</th>
             </tr>
           </thead>
           <tbody>
@@ -93,9 +91,9 @@ function FuncionarioDashboard() {
                 <td>{l.nome_usuario}</td>
                 <td>{l.estacionamento}</td>
                 <td>{l.tipo}</td>
-                <td>R$ {l.preco}</td>
                 <td>{new Date(l.data_lavagem).toLocaleDateString()}</td>
                 <td>{l.hora}</td>
+                <td>R$ {l.preco}</td>
               </tr>
             ))}
           </tbody>

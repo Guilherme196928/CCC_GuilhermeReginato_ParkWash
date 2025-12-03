@@ -20,7 +20,7 @@ function Lavagem() {
   const tiposLavagem = [
     { nome: "Simples", preco: 30 },
     { nome: "Completa", preco: 50 },
-    { nome: "Polimento", preco: 80 },
+    { nome: "Detalhada", preco: 80 },
   ];
 
   const handleTipoChange = (e) => {

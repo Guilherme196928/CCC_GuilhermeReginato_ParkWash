@@ -1,15 +1,29 @@
-// backend/src/controllers/lavagensController.js
 const pool = require("../db");
 const { sendEmail } = require("../utils/emailService");
 
-// ==========================================================
-// Criar nova lavagem + enviar e-mail
-// ==========================================================
 const criarLavagem = async (req, res) => {
   const { usuario_id, estacionamento, tipo, preco, data_lavagem, hora } = req.body;
 
   try {
-    // Inserir no banco
+    const [horaInicio, minutosInicio] = hora.split(":").map(Number);
+    const horaDate = new Date(`${data_lavagem}T${hora}:00`);
+
+    const resultExistente = await pool.query(
+      `SELECT * FROM lavagens 
+       WHERE data_lavagem = $1
+       AND hora BETWEEN $2 AND $3`,
+      [
+        data_lavagem,
+        `${horaInicio.toString().padStart(2,'0')}:00`,
+        `${(horaInicio+1).toString().padStart(2,'0')}:00`
+      ]
+    );
+
+    if (resultExistente.rows.length > 0) {
+      return res.status(400).json({ message: "❌ Já existe uma lavagem agendada nesse horário. Escolha outro horário." });
+    }
+
+
     const result = await pool.query(
       `INSERT INTO lavagens (usuario_id, estacionamento, tipo, preco, data_lavagem, hora)
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
@@ -18,7 +32,7 @@ const criarLavagem = async (req, res) => {
 
     const lavagem = result.rows[0];
 
-    // Buscar dados do usuário para enviar o e-mail
+
     const userResult = await pool.query(
       "SELECT nome, email FROM usuarios WHERE id = $1",
       [usuario_id]
@@ -27,7 +41,7 @@ const criarLavagem = async (req, res) => {
     if (userResult.rows.length > 0) {
       const { nome, email } = userResult.rows[0];
 
-      // Enviar e-mail
+
       await sendEmail(
         email,
         "📌 Lavagem Agendada",
@@ -56,9 +70,8 @@ const criarLavagem = async (req, res) => {
   }
 };
 
-// ==========================================================
-// Listar lavagens de um usuário
-// ==========================================================
+
+
 const listarLavagens = async (req, res) => {
   const { usuario_id } = req.params;
 
@@ -75,9 +88,7 @@ const listarLavagens = async (req, res) => {
   }
 };
 
-// ==========================================================
-// Cancelar lavagem
-// ==========================================================
+
 const cancelarLavagem = async (req, res) => {
   const { id } = req.params;
 
@@ -90,9 +101,7 @@ const cancelarLavagem = async (req, res) => {
   }
 };
 
-// ==========================================================
-// Listar TODAS as lavagens (para o funcionário)
-// ==========================================================
+
 const listarTodasLavagens = async (req, res) => {
   try {
     const result = await pool.query(`
@@ -116,7 +125,7 @@ const listarTodasLavagens = async (req, res) => {
 module.exports = { 
   criarLavagem, 
   listarLavagens, 
-  listarTodasLavagens,   // <-- adicionar aqui
+  listarTodasLavagens,    
   cancelarLavagem 
 };
 

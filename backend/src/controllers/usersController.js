@@ -2,18 +2,17 @@ const pool = require("../db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+
 const registerUser = async (req, res) => {
   const { nome, email, telefone, senha } = req.body;
 
   try {
-    // Validação simples
     if (!nome || !email || !senha) {
       return res
         .status(400)
-        .json({ message: "Campos obrigatórios ausentes: nome, email ou senha." });
+        .json({ message: "Campos obrigatórios: nome, email e senha." });
     }
 
-    // Verifica se já existe usuário com esse e-mail
     const userExists = await pool.query(
       "SELECT * FROM usuarios WHERE email = $1",
       [email]
@@ -23,12 +22,10 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: "E-mail já cadastrado!" });
     }
 
-    // Criptografa a senha informada
     const senhaHash = await bcrypt.hash(senha, 10);
 
-    // Insere o novo usuário no banco
     const result = await pool.query(
-      "INSERT INTO usuarios (nome, email, telefone, senha) VALUES ($1, $2, $3, $4) RETURNING *",
+      "INSERT INTO usuarios (nome, email, telefone, senha, tipo) VALUES ($1, $2, $3, $4, 'cliente') RETURNING *",
       [nome, email, telefone || null, senhaHash]
     );
 
@@ -46,13 +43,15 @@ const registerUser = async (req, res) => {
   }
 };
 
+
 const loginUser = async (req, res) => {
   const { email, senha } = req.body;
 
   try {
-    const result = await pool.query("SELECT * FROM usuarios WHERE email = $1", [
-      email,
-    ]);
+    const result = await pool.query(
+      "SELECT * FROM usuarios WHERE email = $1",
+      [email]
+    );
 
     if (result.rows.length === 0) {
       return res.status(400).json({ message: "Usuário não encontrado!" });
@@ -60,16 +59,14 @@ const loginUser = async (req, res) => {
 
     const user = result.rows[0];
 
-    // Verifica se a senha informada confere com a do banco
     const match = await bcrypt.compare(senha, user.senha);
 
     if (!match) {
       return res.status(401).json({ message: "Senha incorreta!" });
     }
 
-    // Gera o token JWT
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, tipo: user.tipo },
       "chave_secreta_super_segura",
       { expiresIn: "1h" }
     );
@@ -89,7 +86,61 @@ const loginUser = async (req, res) => {
   }
 };
 
+
+const loginFuncionario = async (req, res) => {
+  const { email, senha } = req.body;
+
+  try {
+    const result = await pool.query(
+      "SELECT * FROM usuarios WHERE email = $1",
+      [email]
+    );
+
+    const user = result.rows[0];
+
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+
+   
+    if (user.tipo !== "funcionario") {
+      return res.status(403).json({ error: "Acesso negado. Não é funcionário." });
+    }
+
+
+    const senhaValida = await bcrypt.compare(senha, user.senha);
+
+    if (!senhaValida) {
+      return res.status(401).json({ error: "Senha incorreta" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, tipo: user.tipo },
+      "chave_secreta_super_segura",
+      { expiresIn: "4h" }
+    );
+
+    res.json({
+      message: "Login de funcionário realizado!",
+      token,
+      funcionario: {
+        id: user.id,
+        nome: user.nome,
+        email: user.email,
+        tipo: user.tipo
+      }
+    });
+
+  } catch (err) {
+    console.error("Erro no login funcionário:", err);
+    res.status(500).json({ error: "Erro interno" });
+  }
+};
+
+
+
 module.exports = {
   registerUser,
   loginUser,
+  loginFuncionario,
 };

@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -7,13 +8,19 @@ import Reserva from "./pages/Reserva";
 import Lavagem from "./pages/Lavagem";
 import Historico from "./pages/Historico";
 
-// 👉 importar a nova página
+
 import FuncionarioDashboard from "./pages/FuncionarioDashboard";
+import LoginFuncionario from "./pages/LoginFuncionario";
+
+
+import FuncionarioRoute from "./components/FuncionarioRoute";
 
 function App() {
   return (
     <Router>
       <Routes>
+
+        {/* Página inicial */}
         <Route
           path="/"
           element={
@@ -35,11 +42,18 @@ function App() {
                 >
                   Login
                 </Link>
+                <Link
+                  to="/funcionario/login"
+                  className="bg-white text-blue-700 font-semibold px-6 py-2 rounded-full hover:bg-blue-100 transition"
+                >
+                  Painel Funcionário
+                </Link>
               </div>
             </div>
           }
         />
 
+        {/* Rotas de usuário */}
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -47,8 +61,19 @@ function App() {
         <Route path="/lavagem" element={<Lavagem />} />
         <Route path="/historico" element={<Historico />} />
 
-        {/* 👉 rota do funcionário */}
-        <Route path="/funcionario/dashboard" element={<FuncionarioDashboard />} />
+        {/* Login do funcionário */}
+        <Route path="/funcionario/login" element={<LoginFuncionario />} />
+
+        {/* Painel do funcionário (protegido) */}
+        <Route
+          path="/funcionario/dashboard"
+          element={
+            <FuncionarioRoute>
+              <FuncionarioDashboard />
+            </FuncionarioRoute>
+          }
+        />
+
       </Routes>
     </Router>
   );
